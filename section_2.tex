@@ -1,0 +1,127 @@
+\chapter{Практическая реализация мультиплексирования ввода-вывода}
+\label{ch:chap2}
+
+
+Приведем простейшие примеры использования \verb|select|, \verb|poll|, \verb|epoll| для мониторинга готовности данных на дескрипторе:
+
+\section{Примеры программ}
+Представим модель программы циклом, на каждой итерации которого происходит ожидание готовности чтения в течение тайм-аута, приведем примеры использования \verb|select|, \verb|poll|, \verb|epoll| для наблюдения за стандартным потоком ввода. \\
+\subsubsection{Select}
+\textbf{Пример 1: select} \\
+\verb|#include <stdio.h>|\\
+\verb|#include <stdlib.h>|\\
+\verb|#include <string.h>|\\
+\verb|#include <sys/select.h>|\\
+\verb|#include <sys/time.h>|\\
+\verb|#include <unistd.h>|\\
+\verb|#define BUFSIZE 1024|\\
+\\
+\verb|int main() {|\\
+\verb|    fd_set read_fds;|\\
+\verb|    struct timeval timeout;|\\
+\verb|    while(1) {|\\
+\verb|        |// Инициализируем множество на чтение, добавим дескриптор 0\\
+\verb|        FD_ZERO(&read_fds);|\\
+\verb|        FD_SET(0, &read_fds);|\\
+\verb|        |// Выставим тайм-аут\\
+\verb|        timeout.tv_sec = 5;|\\
+\verb|        timeout.tv_usec = 0;|\\
+\verb|        int retval = select(1, &read_fds, NULL, NULL, &timeout);|\\
+\verb|        if (retval == -1) {|\\
+\verb|            exit(EXIT_FAILURE);|\\
+\verb|        } else if (retval == 0) {|\\
+\verb|            printf("Timeout expired.\n");|\\
+\verb|        } else {|\\
+\verb|            |// Проверим готовность дескриптора\\
+\verb|            if (FD_ISSET(0, &read_fds)) {|\\
+\verb|                int sz;|\\
+\verb|                if ((int sz = read(0, buf, BIFSIZE))>0) {|\\
+\verb|                    buf[sz] = '\0';| // Нуль-терминирование вывода\\
+\verb|                    printf("%s\n", buf);|\\
+\verb|                }|\\
+\verb|            }|\\
+\verb|        }|\\
+\verb|    }|\\
+\verb|    return 0;|\\
+\verb|}|\\
+
+\subsubsection{Poll}
+\textbf{Пример 2: poll} \\
+\verb|#include <poll.h>|\\
+\verb|#include <unistd.h>|\\
+\verb|#include <stdio.h>|\\
+\verb|#include <stdlib.h>|\\
+\verb|#define TIMEOUT 5*1000|\\
+\verb|#define BUFSIZE 1024|\\
+\\
+\verb|int main() {|\\
+\verb|    struct pollfd fds;|\\
+\verb|    char buf[BUFSIZE];|\\
+\verb|    fds.fd = 0;|\\
+\verb|    fds.events = POLLIN;|\\
+\\
+\verb|    int ret = poll(fds, 2, TIMEOUT);|\\
+\\
+\verb|    if (!ret) {|\\
+\verb|        printf("TIMEOUT!\n");|\\
+\verb|    } else if (ret > 0) {|\\
+\verb|        |// Проверим готовность дескриптора\\
+\verb|        if (fds.revents & POLLIN) {|\\
+\verb|            int sz;|\\
+\verb|            if ((sz = read(fds.fd, buf, BIFSIZE))>0) {|\\
+\verb|                buf[sz] = '\0';| // Нуль-терминирование вывода\\
+\verb|                printf("%s\n", buf);|\\
+\verb|            }|\\
+\verb|        } |\\
+\verb|    } else {|\\
+\verb|		perror("poll");|\\
+\verb|	  }|\\
+\verb|	  return 0;|\\
+\verb|}|\\
+
+
+\subsubsection{Epoll}
+\textbf{Пример 3: epoll} \\
+\verb|#include <sys/epoll.h>|\\
+\verb|#include <stdio.h>|\\
+\verb|#include <stdlib.h>|\\
+\verb|#include <unistd.h>|\\
+\verb|#include <errno.h>|\\
+\verb|#define BUFSIZE 4096|\\
+\\
+\verb|int main() {|\\
+\verb|    int epoll_fd;|\\
+\verb|    char buf[BUFSIZE];|\\
+\verb|    struct epoll_event event;|\\
+\verb|    struct epoll_event events[5];|\\
+\verb|    epoll_fd = epoll_create1(0);|\\
+\verb|    if (epoll_fd == -1) {|\\
+\verb|        perror("epoll open");|\\
+\verb|    }|\\
+\verb|    event.events = EPOLLIN;|\\
+\verb|    event.data.fd = 0;|\\
+\verb|    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, 0, &event)) {|\\
+\verb|        perror("epoll ctl");|\\
+\verb|    }|\\
+\\
+\verb|    int event_count = epoll_wait(epoll_fd, events, 5, 5000);|\\
+\verb|    if (event_count == -1) {|\\
+\verb|        perror("epoll wait");|\\
+\verb|    } else {|\\
+\verb|        printf("Events count %d\n" , event_count);|\\
+\verb|        for (int i=0; i < event_count; i++ ) {|\\
+\verb|            printf("Handling FD %u\n", events[i].data.fd);|\\
+\verb|            int sz = 0;|\\
+\verb|            if ((sz = read(events[i].data.fd, buf,|\\
+\verb|                sizeof(buf))) > 0) {|\\
+\verb|                buf[sz] = '\0';| // Нуль-терминирование вывода\\
+\verb|                printf("%s\n", buf);|\\
+\verb|            }|\\
+\verb|        }|\\
+\verb|    }|\\
+\verb|    return 0;|\\
+\verb|}|\\
+
+\section{Задачи для самостоятельного решения}
+
+\endinput

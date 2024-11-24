@@ -1,0 +1,121 @@
+\documentclass[a5paper,twoside,russian]{report}
+\usepackage[T2A]{fontenc}
+\usepackage[cp1251]{inputenc}
+\usepackage[russian]{babel}
+%\usepackage[amsmath]{}
+%\usepackage[dvips]{color}
+%\usepackage[dviwin]{graphics}
+\usepackage[pdftex]{}
+\usepackage{latexsym, eucal, bm, color, amsfonts, amsmath, amssymb, a4wide, epsfig}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+%\usepackage{psfig}
+\usepackage{hyperref, cite}
+\usepackage{nccboxes}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage[alex]{}
+%\usepackage[exercise]{}
+
+\newtheorem{theorem}{Теорема}[section]
+\newtheorem{lemma}{Лемма}
+\newtheorem{corollary}{Следствие}
+\newtheorem{definition}{Определение}
+\newtheorem{property}{Свойство}
+\newtheorem{example}{Пример}
+\newtheorem{remark}{Замечение}
+\newtheorem{proposition}{Предложение}
+\newtheorem{hypothesis}{Гипотеза}
+\newtheorem{exersize}{Упражнение}[chapter]
+\pagestyle {plain}
+
+\clubpenalty=10000
+\widowpenalty=10000
+\multlinegap=0pt
+
+\hoffset=-10.4mm \voffset=-17.4mm \oddsidemargin=5mm \evensidemargin=0mm \topmargin=0mm \headheight=0mm \headsep=9mm \footskip=1cm
+\textheight=174mm \textwidth=113mm
+
+\lstset{language=Python, frame=lines, caption={Python Code Example}, basicstyle=\footnotesize}
+
+\binoppenalty=10000 \relpenalty=10000
+
+\makeatletter
+
+\selectlanguage{russian}
+
+\input {alex.sty}
+
+\def\algorithmicrequire{\textbf{Вход:}}
+\def\algorithmicensure{\textbf{Выход:}}
+\def\algorithmicif{\textbf{если}}
+\def\algorithmicthen{\textbf{то}}
+\def\algorithmicelse{\textbf{иначе}}
+\def\algorithmicelsif{\textbf{иначе если}}
+\def\algorithmicforall{\textbf{для всех}}
+\def\algorithmicdo{}
+\def\algorithmicwhile{\textbf{пока}}
+\def\algorithmicrepeat{\textbf{повторять}}
+\def\algorithmicuntil{\textbf{пока}}
+\def\algorithmicloop{\textbf{цикл}}
+\def\algorithmiccase{\textbf{если}}
+\def\algorithmicswitch{\textbf{В зависимости от }}
+\def\algorithmiccomment#1{\quad// {\sl #1}}
+\def\e{\varepsilon}
+\algnewcommand\algorithmicswitch{\textbf{switch}}
+\algnewcommand\algorithmiccase{\textbf{case}}
+
+\algdef{SE}[SWITCH]{Switch}{EndSwitch}[1]{\algorithmicswitch\ #1\ \algorithmicdo}{\algorithmicend\ \algorithmicswitch}%
+\algdef{SE}[CASE]{Case}{EndCase}[1]{\algorithmiccase\ #1}{\algorithmicend\ \algorithmiccase}%
+\algtext*{EndSwitch}%
+\algtext*{EndCase}%
+%\includeonly {section_7}
+
+%----------------------------------------------------------------
+\begin{document}
+\input {_title}
+
+
+
+
+
+
+%\input {intro}
+\clearpage
+
+
+%\fontsize {9dd}{11dd} \selectfont
+
+
+
+
+
+
+
+\fontsize {10dd}{12dd} \selectfont
+
+
+
+\sloppy
+
+\pagestyle {myheadings}
+
+\renewcommand{\@evenhead}{\hfil \small\leftmark\hfil}
+\renewcommand{\@oddhead}{\hfil \small\rightmark \hfil}
+\renewcommand{\@evenfoot}{\hfil\thepage\hfil}
+\renewcommand{\@oddfoot}{\hfil\thepage\hfil}
+
+%\clearpage
+
+
+%\include {intro}
+\include {section_1}
+\include {section_2}
+
+\tableofcontents
+\clearpage
+
+\input {_close}
+
+\end{document}
+%----------------------------------------------------------------

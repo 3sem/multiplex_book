@@ -1,0 +1,12 @@
+CLEAN:
+  del *.bak
+  del *.out
+  del *.aux
+  del *.toc
+  del *.log
+  del *.out
+  del *.dvi
+
+ 
+
+  
